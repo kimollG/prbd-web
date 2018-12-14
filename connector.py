@@ -88,23 +88,20 @@ class Connector:
         return self.__mycursor__.fetchall()
 
     def person(self, person_id):
-        query = 'select name from person'
+        query = 'select name from person where person_id = %s'
 
-        education_query = 'select (' \
-                            'select * ' \
-                            'from institution i ' \
-                            'where i.institution_id = education.institution_id),' \
-                          'degree,profile,enter_date,graduation ' \
-                          'from education ' \
-                          'where person_id = %s'
-        experience_query= 'select (' \
-                          'select name from enterprise ' \
-                          'where enterprise.enterprise_id = work_experience.enterprise_id),' \
-                          'position,enrollment,dismission from work_experience ' \
-                          'where person_id= %s'
+        education_query = '''select i.*, degree, profile, enter_date,graduation_date
+                            from education
+                            join institution i
+                            on education.institution_id = i.institution_id
+                            where person_id = %s'''
+        experience_query= '''select  e.*,we.position,we.enrollment, we.dismission
+                            from work_experience we
+                            join enterprise e on we.enterprise_id = e.enterprise_id
+                            where person_id = %s'''
         person = list()
-        for x in query,education_query,experience_query:
-            self.__mycursor__.execute(query)
+        for x in query, education_query, experience_query:
+            self.__mycursor__.execute(x, [person_id, ])
             person.append(self.__mycursor__.fetchall())
         return person
 

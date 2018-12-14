@@ -94,9 +94,18 @@ def people():
 def person():
     a = int(request.args['p'])
     person = con.person(a)
-    render_template()
-
-    return render_template('error.html', message='oops')
+    content = [{
+        'type': 'line', 'data': [{'text': 'Name:'}, {'text': person[0][0][0]}]
+    }]
+    if len(person[1]) > 0:
+        content.extend([{
+            'type': 'line', 'data': [{'text': 'Education:'}]
+        },
+        {
+            'type': "list", 'data': [({'text': x[1], 'link': '/institution/?id=' + str(x[0])},
+                                      {'text': x[4]+' of '+x[5]}) for x in person[1]]
+        }])
+    return render_template('GeneralSingleElement.html', title=person[0][0][0], content=content)
 
 
 @app.route('/vacancy_<vid>/<operation>', methods=['GET', 'POST'])
