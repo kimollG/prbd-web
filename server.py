@@ -72,15 +72,14 @@ def default_routing(path):
 
 @app.route('/vacancy_<vid>/')
 def detailed_vacancy(vid):
-    try:
-        if int(vid) in con.id_check('vacancy'):
-            vac_info, requirements = con.detailed_vacancy(int(vid))
-            print(requirements)
-            return render_template('vacancy.html', vac_info=vac_info, requirements=requirements)
-        else:
-            render_template('error.html', message='no vacancy')
-    except:
+    if int(vid) in con.id_check('vacancy'):
+        vac_info, requirements = con.detailed_vacancy(int(vid))
+        print(requirements)
+        return render_template('GeneralSingleElement.html', vac_info=vac_info, requirements=requirements, title='vacancy')
+    else:
         render_template('error.html', message='no vacancy')
+    # except:
+    #     render_template('error.html', message='no vacancy')
 
 
 @app.route('/List of people/')
@@ -161,4 +160,4 @@ def add_requirement():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5001)
+    app.run(debug=True, port=5000)
