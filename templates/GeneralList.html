@@ -1,0 +1,21 @@
+{% extends 'template.html' %}
+{% block head_title %}
+    {{ title }}
+{% endblock %}
+{% block title %}
+    {{ title }}
+{% endblock %}
+{% block content %}
+        {% for comp,link_text,link in content() %}
+            <p class="general-beautiful"> {% for item in comp%}
+                {{ item }}&nbsp;
+                {% endfor %}
+                {% if link %}
+             <a href ="/{{link}}"> {{ link_text }}</a></p>
+                {% endif %}
+        {% endfor %}
+
+    {% if need_back %}
+        <p class="beautiful"><a href="../">back</a></p>
+    {% endif %}
+{% endblock %}

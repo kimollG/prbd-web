@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>vacancy</title>
+</head>
+<body>
+    <h2>Vacancy</h2>
+    {% for x in vac_info[:3]%}
+        {{x}}&nbsp;
+    {% endfor %}
+    {% if vac_info[3]%}
+    <p>Description: {{vac_info[3]}}</p>
+    {% endif %}
+    <p>Requirements:</p>
+    <ul>
+        {% for x in requirements %}
+        <li> {{ x[0] }}   {{ x[1] }} </li>
+        {% endfor %}
+    </ul>
+    <a href="newreq"> add requirement</a><br>
+    <a href="edit">edit vacancy</a><br>
+    <a href='remove'>remove vacancy</a><br>
+    <a href="../">home</a>
+</body>
+</html>

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>hi there</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='extra.css') }}">
+</head>
+<body>
+<div class = "title">
+    <h2 class="beautiful">VACANCY</h2>
+</div>
+<div class = "positioning">
+<div class="whiteBlock upper">
+    <h1 class="beautiful"> The vacancies web-site </h1>
+</div>
+{% for item in menuItems %}
+<p class = "beautiful"><a href = "/{{item}}"> {{item}} </a></p>
+{% endfor %}
+fdfd
+</div>
+</body>
+</html>

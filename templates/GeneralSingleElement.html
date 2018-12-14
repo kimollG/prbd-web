@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{title}}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='extra.css') }}">
+</head>
+<body>
+    <div class = "title">
+        <h2 class="beautiful">VACANCY</h2>
+    </div>
+    <div class = "positioning">
+    <div class="whiteBlock upper">
+        <h1 class="beautiful"> {{ title }} </h1>
+    </div>
+
+
+        {% for comp,link_text,link in content() %}
+            <p class="general-beautiful"> {% for item in comp%}
+                {{ item }}&nbsp;
+                {% endfor %}
+                {% if link %}
+             <a href ="/{{link}}"> {{ link_text }}</a></p>
+                {% endif %}
+        {% endfor %}
+
+    {% if need_back %}
+        <p class="beautiful"><a href="../">back</a></p>
+    {% endif %}
+    </div>
+</body>
+</html>

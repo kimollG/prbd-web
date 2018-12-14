@@ -1,0 +1,28 @@
+{% extends 'template.html' %}
+{% block head_title %}
+    {{ title }}
+{% endblock %}
+{% block title %}
+    {{ title }}
+{% endblock %}
+{% block content %}
+    <form class = "general-beautiful" action = "{{action}}" method="post">
+        {% for position in positions %}
+            {{position.description}}: <br>
+
+            {% if position.type == 'select' %}
+                <select name = "{{position.name}}" {%if position.value %} value="{{position.value}}"  {% endif %}>
+                {% for x in position.content() %}
+                    <option name = {{ x }} {%if x == position.value%} selected {% endif %}>{{ x }} </option>
+                {% endfor %}
+                </select>
+
+            {% else %}
+                <input type = "{{position.type}}" name = "{{position.name}}" {%if position.value %} value="{{position.value}}" {% endif %}><br>
+            {% endif %}
+        {% endfor %}
+
+        <input type="submit" name ="ok">
+    </form>
+        <p class="beautiful"><a href="../">back</a></p>
+{% endblock %}

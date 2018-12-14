@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>add new vacancy</title>
+</head>
+<body>
+    <form action = "/add_vacancy" method="post">
+        Position: <br>
+        <input type = "text" name = "position"><br>
+        Description: <br>
+        <input type = "text" name = "description"><br>
+        Salary: <br>
+        <input type = "number" name = "salary" ><br>
+        Company: <br>
+        <select name = "company">
+            {% for x in content() %}
+            <option name = {{ x[1] }}>{{ x[1] }}</option>
+            {% endfor %}
+        </select>
+        <input type="submit" name ="ok">
+    </form>
+    <a href="../">back</a>
+</body>
+</html>

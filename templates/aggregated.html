@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>general data</title>
+    <style>
+        td{ padding: 5px; }
+    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='extra.css') }}">
+</head>
+<body>
+<div class = "title">
+    <h2 class="beautiful">VACANCY</h2>
+</div>
+<div class = "positioning">
+    <div class="whiteBlock upper">
+        <h1 class="beautiful"> Common Data </h1>
+    </div>
+    <table border="1" class="beautiful" align="center">
+        {% for x in content() %}
+        <tr>
+            {% for a in x[:3] %}
+                <td>
+                    {%- if x[3] -%}
+                    <b> {{a}}&nbsp; </b>
+                    {%- else -%}
+                    {{a}}&nbsp;
+                    {%-  endif -%}
+                </td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </table>
+    <p class="beautiful">
+    <a href = '/'>home</a>
+    </p>
+</div>
+</body>
+</html>

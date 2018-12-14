@@ -1,0 +1,37 @@
+.whiteBlock{
+    padding-top: 30px;
+    padding-right: 20px;
+    padding-bottom: 30px;
+    padding-left: 20px;
+    background: #ffffff;
+    position: relative;
+    border-style: solid;
+    border-width: 1px;
+    border-top-width: 0px;
+}
+.positioning {
+    background: #f7f7f7;
+    max-width: 1000px;
+    margin: auto;
+    padding-bottom: 10px;
+    border-radius: 30px;
+}
+.upper{
+    margin-top: 0px;
+}
+.title{
+    background: #401935;
+   padding-left: 30px;
+    margin: 0px;
+}
+form {
+    margin: 20px;
+}
+@font-face {
+    font-family: "Tiempos Headline";
+    src: url(TiemposHeadlineTest-Medium.woff);
+}
+
+@font-face {
+    font-family: "Grotes";
+    src: url(FoundersGrotTextTest-Regular.woff);}
