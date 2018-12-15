@@ -1,6 +1,6 @@
 def companiesFilter(func):
     for x in func():
-        yield list(x[1:])
+        yield list(x[1:]),x[0]
 
 def generalFilter(func,*filtingBy,isReducing = False):
     if not isReducing:

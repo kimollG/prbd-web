@@ -20,7 +20,7 @@ app.secret_key = "WEmwU"
 con = connector.Connector()
 menuItems = {
     'Companies': {
-        'content': lambda: ((x, None, None) for x in companiesFilter(con.companies)),
+        'content': lambda: ((x, '(details)', 'company/?id='+str(link)) for x, link in companiesFilter(con.companies)),
         'page': 'GeneralList.html',
         'title': 'Companies',
         'need_back': True},
@@ -30,20 +30,20 @@ menuItems = {
         'title': 'General data'},
     'NewVacancy': {'action': 'new_vacancy',
                    'positions': [
-                        Position(description='Position', type='text', name='position'),
-                        Position(description='Description', type='text', name='description'),
-                        Position(description='Salary', type='number', name='salary'),              # companies names
-                        SelectPosition(description='Company', name='company',
-                                       content=lambda: (x[1] for x in con.companies()))
+                       Position(description='Position', type='text', name='position'),
+                       Position(description='Description', type='text', name='description'),
+                       Position(description='Salary', type='number', name='salary'),  # companies names
+                       SelectPosition(description='Company', name='company',
+                                      content=lambda: (x[1] for x in con.companies()))
                    ],
                    'title': 'Add new vacancy',
                    'page': 'GeneralForm.html'},
-    'ShowVacancies': {'content': lambda: ((x[0], '(details)', 'vacancy_'+str(x[1])) for x in con.vacancies()),
+    'ShowVacancies': {'content': lambda: ((x[0], '(details)', 'vacancy_' + str(x[1])) for x in con.vacancies()),
                       'title': 'Available vacancies',
                       'page': 'GeneralList.html',
                       'need_back': True},
     'List of people': {'FOO': lambda: generalFilter(con.all_people(), 1, isReducing=True),
-                       'title':'People, looking for job'}}
+                       'title': 'People, looking for job'}}
 
 
 @app.route('/')
@@ -56,6 +56,20 @@ def index():
 @app.route('/favicon.ico/')
 def favicon():
     return 'aaaa'
+
+
+@app.route('/institutions/', methods=['GET'])
+def institutions():
+    if 'id' in request.args.keys():
+        inst = con.institutions(iid=request.args['id'])
+        return render_template('GeneralSingleElement.html', title=inst[1], content=[
+            {'type': 'line', 'data': [{'text': 'address:'}, *({'text': x} for x in inst[2:])]},
+            {'type': 'line', 'data': [{'text': 'edit', 'link': 'edit'}]},
+            {'type': 'line', 'data': [{'text': 'remove', 'link': 'remove'}]}
+        ])
+    insts = con.institutions()
+
+    return render_template('error.html', message='wring')
 
 
 @app.route('/<path>/')
@@ -75,7 +89,8 @@ def detailed_vacancy(vid):
     if int(vid) in con.id_check('vacancy'):
         vac_info, requirements = con.detailed_vacancy(int(vid))
         print(requirements)
-        return render_template('GeneralSingleElement.html', vac_info=vac_info, requirements=requirements, title='vacancy')
+        return render_template('GeneralSingleElement.html', vac_info=vac_info, requirements=requirements,
+                               title='vacancy')
     else:
         render_template('error.html', message='no vacancy')
     # except:
@@ -90,6 +105,17 @@ def people():
                            need_back=True)
 
 
+@app.route('/company/', methods=['GET'])
+def company():
+    cid = request.args['id']
+    comp = con.companies(cid=cid)
+    return render_template('GeneralSingleElement.html', title=comp[1], content=[
+        {'type': 'line', 'data': [{'text': x} for x in comp[1:]]},
+        {'type': 'line', 'data': [{'text': 'edit', 'link': 'edit'}]},
+        {'type': 'line', 'data': [{'text': 'remove', 'link': 'remove'}]}
+    ])
+
+
 @app.route('/person/', methods=['GET'])
 def person():
     a = int(request.args['p'])
@@ -101,10 +127,21 @@ def person():
         content.extend([{
             'type': 'line', 'data': [{'text': 'Education:'}]
         },
-        {
-            'type': "list", 'data': [({'text': x[1], 'link': '/institution/?id=' + str(x[0])},
-                                      {'text': x[4]+' of '+x[5]}) for x in person[1]]
-        }])
+            {
+                'type': "list", 'data': [({'text': x[1], 'link': '/institutions/?id=' + str(x[0])},
+                                          {'text': x[4] + ' of ' + x[5] + ','},
+                                          {'text': 'from ' + str(x[6]) + ' , graduated at ' + str(x[7])}) for x in
+                                         person[1]]
+            }])
+    if len(person[2]) > 0:
+        content.extend([
+            {'type': 'line', 'data': [{'text': 'Work experience:'}]}, {
+                'type': "list", 'data': [({'text': x[1], 'link': '/company/?id=' + str(x[0])},
+                                          {'text': x[2] + ','},
+                                          {'text': 'from ' + str(x[3]) + ' , to ' + str(x[4])}) for x in
+                                         person[2]]
+            }
+        ])
     return render_template('GeneralSingleElement.html', title=person[0][0][0], content=content)
 
 
@@ -124,7 +161,7 @@ def new_requirement(vid, operation):
             Position(description='Position', type='text', name='position', value=vac_info[2]),
             Position(description='Description', type='text', name='description', value=vac_info[3]),
             Position(description='Salary', type='number', name='salary', value=int(vac_info[1])),
-            SelectPosition(description='Company', name='company', value=vac_info[0],  content=lambda:companies_names)
+            SelectPosition(description='Company', name='company', value=vac_info[0], content=lambda: companies_names)
         ]
         return render_template('GeneralForm.html', action='update', positions=pos)
 

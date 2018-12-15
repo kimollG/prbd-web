@@ -28,7 +28,19 @@ class Connector:
 
         return res_list
 
-    def companies(self):
+
+    def institutions(self,iid=None):
+        if iid is not None:
+            self.__mycursor__.execute("SELECT * FROM institution where institution_id = %s", [iid, ])
+            return self.__mycursor__.fetchall()[0]
+        self.__mycursor__.execute("SELECT * FROM institution")
+        return (list(x) for x in self.__mycursor__.fetchall())
+
+
+    def companies(self,cid = None):
+        if cid is not None:
+            self.__mycursor__.execute("SELECT * FROM ENTERPRISE where enterprise_id = %s",[cid,])
+            return self.__mycursor__.fetchall()[0]
         self.__mycursor__.execute("SELECT * FROM ENTERPRISE")
         ret = (list(x) for x in self.__mycursor__.fetchall())
         return ret
@@ -95,7 +107,7 @@ class Connector:
                             join institution i
                             on education.institution_id = i.institution_id
                             where person_id = %s'''
-        experience_query= '''select  e.*,we.position,we.enrollment, we.dismission
+        experience_query= '''select  e.enterprise_id, e.name, we.position, ifnull(we.enrollment,'-'), ifnull(we.dismission,'-')
                             from work_experience we
                             join enterprise e on we.enterprise_id = e.enterprise_id
                             where person_id = %s'''
