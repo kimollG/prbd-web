@@ -1,4 +1,4 @@
-from flask import Flask, request, Response, render_template, url_for
+from flask import Flask, request, render_template
 from werkzeug.utils import redirect
 
 from Position import Position, SelectPosition
@@ -23,6 +23,7 @@ menuItems = {
         'content': lambda: ((x, '(details)', 'company/?id='+str(link)) for x, link in companiesFilter(con.companies)),
         'page': 'GeneralList.html',
         'title': 'Companies',
+        'after_line': {'u': 'Total:', 'p': ' {} companies'.format(con.number_of_companies())},
         'need_back': True},
     'Aggregated': {
         'content': con.aggregate,
@@ -41,6 +42,7 @@ menuItems = {
     'ShowVacancies': {'content': lambda: ((x[0], '(details)', 'vacancy_' + str(x[1])) for x in con.vacancies()),
                       'title': 'Available vacancies',
                       'page': 'GeneralList.html',
+                      'after_line': {'u': 'Total:', 'p': ' {} vacancies'.format(con.number_of_vacancies())},
                       'need_back': True},
     'List of people': {'FOO': lambda: generalFilter(con.all_people(), 1, isReducing=True),
                        'title': 'People, looking for job'}}
@@ -50,7 +52,7 @@ menuItems = {
 def index():
     return render_template('GeneralList.html',
                            content=lambda: (('', menuItems[x]['title'], x) for x in menuItems.keys()),
-                           title='Vacancies web-site')
+                           title='Vacancies web-site', after_line=False)
 
 
 @app.route('/favicon.ico/')
@@ -81,7 +83,7 @@ def default_routing(path):
         params = menuItems[path]
         return render_template(params['page'], **params)
     else:
-        -1  # render_template('error.html',message = '404')
+        return render_template('error.html', message='something went wrong')
 
 
 @app.route('/vacancy_<vid>/')
@@ -89,12 +91,24 @@ def detailed_vacancy(vid):
     if int(vid) in con.id_check('vacancy'):
         vac_info, requirements = con.detailed_vacancy(int(vid))
         print(requirements)
+        content = [
+            {'type': 'line', 'data': [{'text': x} for x in vac_info[:3]]},
+        ]
+        if vac_info[3]:
+            content.append(
+                {'type': 'line', 'data': [{'text': 'Description: {}'.format(vac_info[3])}]})
+        content.extend([
+            {'type': 'line', 'data': [{'text': 'Requirements: '}]},
+            {'type': 'list', 'data': [[{'text': 'education: {}, work experience: {}'.format(req[0], req[1])}] for req in requirements]},
+            {'type': 'list', 'data': [
+                [{'link': l, 'text': t}] for (t, l) in {'add requirement': 'newreq',
+                                                                             'edit vacancy': 'edit',
+                                                                             'remove vacancy': 'remove'}.items()]}
+        ])
         return render_template('GeneralSingleElement.html', vac_info=vac_info, requirements=requirements,
-                               title='vacancy')
+                               content=content, title='vacancy')
     else:
         render_template('error.html', message='no vacancy')
-    # except:
-    #     render_template('error.html', message='no vacancy')
 
 
 @app.route('/List of people/')
@@ -102,18 +116,26 @@ def people():
     return render_template('GeneralList.html',
                            title='People, looking for employment',
                            content=lambda: ((x[1:], '(details)', 'person/?p=' + str(x[0])) for x in con.all_people()),
-                           need_back=True)
+                           need_back=True,
+                           after_line=False)
 
 
 @app.route('/company/', methods=['GET'])
 def company():
     cid = request.args['id']
     comp = con.companies(cid=cid)
-    return render_template('GeneralSingleElement.html', title=comp[1], content=[
-        {'type': 'line', 'data': [{'text': x} for x in comp[1:]]},
-        {'type': 'line', 'data': [{'text': 'edit', 'link': 'edit'}]},
-        {'type': 'line', 'data': [{'text': 'remove', 'link': 'remove'}]}
-    ])
+    if 'f' in request.args.keys():
+        op = request.args['f']
+        if op == 'edit':
+            return render_template('GeneralForm.html', title='Editing {}'.format())
+        if op == 'delete':
+            None
+    else:
+        return render_template('GeneralSingleElement.html', title=comp[1], content=[
+            {'type': 'line', 'data': [{'text': x} for x in comp[1:]]},
+            {'type': 'line', 'data': [{'text': 'edit', 'link': '?id={}&f=edit'.format(str(cid))}]},
+            {'type': 'line', 'data': [{'text': 'remove', 'link': 'remove'}]}
+        ])
 
 
 @app.route('/person/', methods=['GET'])

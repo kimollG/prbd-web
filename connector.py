@@ -117,6 +117,14 @@ class Connector:
             person.append(self.__mycursor__.fetchall())
         return person
 
+    def number_of_vacancies(self):
+        query = 'Select Count(*)  from vacancy'
+        self.__mycursor__.execute(query)
+        return self.__mycursor__.fetchone()[0]
+
+    def number_of_companies(self):
+        self.__mycursor__.execute('select count(*) from enterprise')
+        return  self.__mycursor__.fetchone()[0]
 
 if __name__ == '__main__':
     c = Connector()

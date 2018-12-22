@@ -14,7 +14,9 @@
              <a href ="/{{link}}"> {{ link_text }}</a></p>
                 {% endif %}
         {% endfor %}
-
+    {% if after_line %}
+        <p class="beautiful"><u>{{ after_line['u']}}</u> {{after_line['p'] }}</p>
+    {% endif %}
     {% if need_back %}
         <p class="beautiful"><a href="../">back</a></p>
     {% endif %}
