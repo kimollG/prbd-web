@@ -1,0 +1,25 @@
+{% extends 'template.html' %}
+{% block head_title %}
+    {{ title }}
+{% endblock %}
+{% block title %}
+    {{ title }}
+{% endblock %}
+{% block content %}
+    <form action="/FindPerson/res", method="get">
+        {% for sel in content ['selections'] %}
+            <select name = {{sel['name']}}>
+                {% for x in  sel['vals']%}
+                    <option name = {{ x['name']}}>{{ x['val'] }}</option>
+                {% endfor %}
+            </select>
+        {% endfor %}
+    <input type="submit">
+    </form>
+    {% for x in find_res %}
+        <p class="beautiful"> {{ x[1] }} <a href="/person/?p={{ x[0] }}">(details)</a> </p>
+    {% endfor %}
+     {% if need_back %}
+        <p class="beautiful"><a href="../">back</a></p>
+    {% endif %}
+{% endblock %}

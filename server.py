@@ -45,7 +45,23 @@ menuItems = {
                       'after_line': {'u': 'Total:', 'p': ' {} vacancies'.format(con.number_of_vacancies())},
                       'need_back': True},
     'List of people': {'FOO': lambda: generalFilter(con.all_people(), 1, isReducing=True),
-                       'title': 'People, looking for job'}}
+                       'title': 'People, looking for job'},
+    'FindPerson': {
+
+        'title': 'Search for employee',
+        'content':
+            {'selections': [{'name': 'education',
+                                            'vals': [
+                                            {'name': x[0], 'val': x[1]} for x in con.institutions()
+                                            ]+[{'name': -1, 'val': '-'}]},
+                            {'name': 'work',
+                             'vals': [
+                                    {'name': x[0], 'val': x[1]} for x in con.companies()
+                                    ]+[{'name': -1, 'val': '-'}]}]},
+        'page': 'GeneralFind.html',
+        'need_back': True
+    }}
+
 
 
 @app.route('/')
@@ -76,8 +92,6 @@ def institutions():
 
 @app.route('/<path>/')
 def default_routing(path):
-    # print(path)
-    # dcompare(path,'aggregated')
     items = menuItems.keys()
     if path in items:
         params = menuItems[path]
@@ -225,6 +239,22 @@ def add_requirement():
             return redirect('/vacancy_' + vid)
         except:
             return render_template('error.html', message='Failed to add requirement')
+
+
+@app.route('/FindPerson/res/', methods=['GET'])
+def find_person():
+    education = request.args['education']
+    exp = request.args['work']
+    if education == '-':
+        education = False
+    if exp == '-':
+        exp = False
+    if exp is False and education is False:
+        res = con.all_people()
+    else:
+        res = con.all_people(filtering=[education,exp])
+    m = menuItems['FindPerson']
+    return render_template(m['page'], **m, find_res=res)
 
 
 if __name__ == '__main__':

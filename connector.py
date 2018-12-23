@@ -94,9 +94,21 @@ class Connector:
             self.__mycursor__.execute(query, (int(vid),))
             self.__mydb__.commit()
 
-    def all_people(self):
-        query = 'select * from person'
-        self.__mycursor__.execute(query)
+    def all_people(self, filtering = None):
+        if filtering:
+            query = 'select * from person p where'
+            if filtering[0]:
+                query += '''(p.person_id) in (select education.person_id from education 
+                    join institution i on education.institution_id = i.institution_id where i.name = %s)'''
+            if  filtering[0] and filtering[1]:
+                query+= 'and'
+            if filtering[1]:
+                query += '''(p.person_id) in (select person_id from work_experience we 
+                            join enterprise e on we.enterprise_id = e.enterprise_id where e.name = %s)'''
+            self.__mycursor__.execute(query, [x for x in filtering if x])
+        else:
+            query = 'select * from person'
+            self.__mycursor__.execute(query)
         return self.__mycursor__.fetchall()
 
     def person(self, person_id):
