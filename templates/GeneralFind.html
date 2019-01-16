@@ -7,14 +7,15 @@
 {% endblock %}
 {% block content %}
     <form action="/FindPerson/res", method="get">
-        {% for sel in content ['selections'] %}
-            <select name = {{sel['name']}}>
+        <p class="beautiful">{% for sel in content ['selections'] %}
+            <span>{{sel['desc']}}<select name = {{sel['name']}}>
                 {% for x in  sel['vals']%}
                     <option name = {{ x['name']}}>{{ x['val'] }}</option>
                 {% endfor %}
-            </select>
+            </select></span>
         {% endfor %}
     <input type="submit">
+    </p>
     </form>
     {% for x in find_res %}
         <p class="beautiful"> {{ x[1] }} <a href="/person/?p={{ x[0] }}">(details)</a> </p>

@@ -53,11 +53,11 @@ menuItems = {
             {'selections': [{'name': 'education',
                                             'vals': [
                                             {'name': x[0], 'val': x[1]} for x in con.institutions()
-                                            ]+[{'name': -1, 'val': '-'}]},
+                                            ]+[{'name': -1, 'val': '-'}], 'desc': 'education: '},
                             {'name': 'work',
                              'vals': [
                                     {'name': x[0], 'val': x[1]} for x in con.companies()
-                                    ]+[{'name': -1, 'val': '-'}]}]},
+                                    ]+[{'name': -1, 'val': '-'}], 'desc': 'work experience: '}]},
         'page': 'GeneralFind.html',
         'need_back': True
     }}
