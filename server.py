@@ -55,7 +55,7 @@ menuItems = {
             {'selections': [{'name': 'education',
                                             'vals': [
                                             {'name': x[0], 'val': x[1]} for x in con.institutions()
-                                            ]+[{'name': -1, 'val': '-'}], 'desc': 'educatio: '},
+                                            ]+[{'name': -1, 'val': '-'}], 'desc': 'education: '},
                             {'name': 'work',
                              'vals': [
                                     {'name': x[0], 'val': x[1]} for x in con.companies()
@@ -136,21 +136,38 @@ def people():
                            after_line=False)
 
 
-@app.route('/company/', methods=['GET'])
+@app.route('/company/', methods=['GET', 'POST'])
 def company():
     cid = request.args['id']
     comp = con.companies(cid=cid)
     if 'f' in request.args.keys():
         op = request.args['f']
+        print(op)
         if op == 'edit':
-            return render_template('GeneralForm.html', title='Editing {}'.format())
-        if op == 'delete':
-            None
+            pos = [
+                Position(description='Name', type='text', name='name', value=comp[1]),
+                Position(description='Address', type='text', name='address', value=comp[2]),
+                Position(description='City', type='text', name='city', value=comp[3])
+            ]
+            return render_template('GeneralForm.html', action='?id={}&f=update'.format(cid),
+                                   positions=pos,
+                                   hidden={'name': 'id', 'value': comp[0]},
+                                   title='Editing {}'.format(comp[1]))
+        if op == 'update':
+            id = request.form['id']
+            name = request.form['name']
+            city = request.form['city']
+            address = request.form['address']
+            con.update_company(id, name, city=city, address=address)
+            return redirect('/company/?id={}'.format(id))
+        if op == 'remove':
+            con.remove_company(cid=cid)
+            return redirect('/Companies')
     else:
         return render_template('GeneralSingleElement.html', title=comp[1], content=[
             {'type': 'line', 'data': [{'text': x} for x in comp[1:]]},
             {'type': 'line', 'data': [{'text': 'edit', 'link': '?id={}&f=edit'.format(str(cid))}]},
-            {'type': 'line', 'data': [{'text': 'remove', 'link': 'remove'}]}
+                {'type': 'line', 'data': [{'text': 'remove', 'link': '?id={}&f=remove'.format(str(cid))}]}
         ])
 
 

@@ -82,11 +82,22 @@ class Connector:
         requirements = self.__mycursor__.fetchall()
         return vac_info, requirements
 
+    def update_company(self,cid,name,city,address):
+        query = ''' update enterprise
+                    set name = %s, city = %s,address = %s
+                    where enterprise_id = %s'''
+        self.__mycursor__.execute(query,(name,city,address,cid))
+        self.__mydb__.commit()
     def update(self, vid, company, salary, position, description):
         query = '''update vacancy
                     set enterprise_id = (SELECT enterprise_id FROM enterprise WHERE name LIKE(%s)), salary = %s, position = %s, description = %s 
                     where vacancy_id = %s'''
         self.__mycursor__.execute(query, (company, salary, position, description, vid))
+        self.__mydb__.commit()
+
+    def remove_company(self, cid):
+        query = '''delete from enterprise where enterprise_id=%s'''
+        self.__mycursor__.execute(query,(int(cid),))
         self.__mydb__.commit()
 
     def remove_vacancy(self, vid):

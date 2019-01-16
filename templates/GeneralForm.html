@@ -20,8 +20,11 @@
             {% else %}
                 <input type = "{{position.type}}" name = "{{position.name}}" {%if position.value %} value="{{position.value}}" {% endif %}><br>
             {% endif %}
-        {% endfor %}
 
+        {% endfor %}
+        {% if hidden %}
+             <input type="hidden" name="{{ hidden['name'] }}" value="{{ hidden['value'] }}">
+            {% endif %}
         <input type="submit" name ="ok">
     </form>
         <p class="beautiful"><a href="../">back</a></p>
