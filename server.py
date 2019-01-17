@@ -1,26 +1,27 @@
-import os
+import os  # взаимодействие с ОС
 
-from flask import Flask, request, render_template, send_from_directory
-from werkzeug.utils import redirect
+from flask import Flask, request, render_template, send_from_directory  # функции для сервера
+from werkzeug.utils import redirect  # Функция перенаправления на другую страницу
 
-from Position import Position, SelectPosition
-import connector
-from DataFilter import companiesFilter, generalFilter
-from collections import namedtuple
+from Position import Position, SelectPosition  # мои штуки для элементов формы
+import connector  # мой класс взаимодействия с БД
+from DataFilter import companiesFilter, generalFilter  # Довольно тупая штука, написанная мной
+from collections import namedtuple  # кортежи
 
+# Кортеж
 vacancy = namedtuple('vacancy', ['comp_name', 'salary', 'description', 'position'])
 
-
+# Сравнение двух строк, использовалось для отладки
 def compare(s1, s2):
     for x in zip(s1, s2):
         if x[0] != x[1]:
             print(x[0], x[1])
 
 
-app = Flask(__name__)
-app.secret_key = "WEmwU"
-con = connector.Connector()
-menuItems = {
+app = Flask(__name__)  # приложение, создаваемое фласком
+app.secret_key = "WEmwU"  # не так уж и нужно
+con = connector.Connector()  # инициализация объекта для работы с БД
+menuItems = {  # Элементы меню
     'Companies': {
         'content': lambda: ((x, '(details)', 'company/?id='+str(link)) for x, link in companiesFilter(con.companies)),
         'page': 'GeneralList.html',
@@ -65,7 +66,7 @@ menuItems = {
     }}
 
 
-
+# главная страница
 @app.route('/')
 def index():
     return render_template('GeneralList.html',
@@ -73,11 +74,14 @@ def index():
                            title='Vacancies web-site', after_line=False)
 
 
+# иконка сайта, не работает
 @app.route('/favicon.ico/')
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static')+'/img', 'favicon.ico',
                                             mimetype='image/vnd.microsoft.icon')
 
+
+# страница с учебными заведениями
 @app.route('/institutions/', methods=['GET'])
 def institutions():
     if 'id' in request.args.keys():

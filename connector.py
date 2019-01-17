@@ -45,16 +45,6 @@ class Connector:
         ret = (list(x) for x in self.__mycursor__.fetchall())
         return ret
 
-    def add_vacancy(self, vacancy):
-        self.__mycursor__.execute('''INSERT INTO vacancy 
-            VALUES(default,(SELECT enterprise_id FROM enterprise WHERE name LIKE(%s)),%s,%s,%s)''',
-                                  (vacancy.comp_name, vacancy.salary, vacancy.position, vacancy.description))
-        self.__mydb__.commit()
-
-    def add_requirement(self, vid, experience, education):
-        self.__mycursor__.execute('insert into requirement values(default,%s,%s,%s)', (vid, experience, education))
-        self.__mydb__.commit()
-
     def vacancies(self, filter_company=None):
         query = "SELECT e.name,e.city , v.salary, v.position,v.vacancy_id FROM VACANCY v join enterprise e on v.enterprise_id = e.enterprise_id "
         if filter_company:
@@ -64,6 +54,16 @@ class Connector:
         for select_result in self.__mycursor__.fetchall():
             ret.append((list(select_result)[:-1], select_result[-1]))
         return ret
+
+    def add_vacancy(self, vacancy):
+        self.__mycursor__.execute('''INSERT INTO vacancy 
+            VALUES(default,(SELECT enterprise_id FROM enterprise WHERE name LIKE(%s)),%s,%s,%s)''',
+                                  (vacancy.comp_name, vacancy.salary, vacancy.position, vacancy.description))
+        self.__mydb__.commit()
+
+    def add_requirement(self, vid, experience, education):
+        self.__mycursor__.execute('insert into requirement values(default,%s,%s,%s)', (vid, experience, education))
+        self.__mydb__.commit()
 
     def id_check(self, table):
         query = 'select ' + table + '_id from ' + table
